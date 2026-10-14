@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 
 namespace Rozumatic_ASD_Lab2
 {
@@ -46,76 +45,63 @@ namespace Rozumatic_ASD_Lab2
             return result;
         }
 
-        // Варіант 1: Середнє арифметичне між min та max
-        static double AverageBetweenMinMax(int[] arr, int minIdx, int maxIdx)
-        {
-            int start = Math.Min(minIdx, maxIdx) + 1;
-            int end = Math.Max(minIdx, maxIdx) - 1;
-            if (start > end) return 0;
-
-            long sum = 0; int count = 0;
-            for (int i = start; i <= end; i++) { sum += arr[i]; count++; }
-            return count > 0 ? (double)sum / count : 0;
-        }
-
-        // Варіант 2: Циклічний зсув праворуч (Потрійний реверс)
-        static void RotateRightInPlace(int[] arr, int k)
-        {
-            if (arr.Length == 0) return;
-            k = k % arr.Length;
-            if (k == 0) return;
-            ReverseInPlace(arr, 0, arr.Length - 1);
-            ReverseInPlace(arr, 0, k - 1);
-            ReverseInPlace(arr, k, arr.Length - 1);
-        }
-
-        // Варіант 3: Видалення дублікатів за один прохід
+        // ІНДИВІДУАЛЬНЕ ЗАВДАННЯ. Варіант 3: Видалення дублікатів з масиву зі стисненням за один прохід
         static int RemoveDuplicatesInPlace(int[] arr)
         {
             if (arr.Length <= 1) return arr.Length;
+
+            // Спочатку сортуємо масив, щоб однакові елементи стали поруч
             Array.Sort(arr); 
+
             int uniqueIdx = 0;
             for (int i = 1; i < arr.Length; i++)
             {
                 if (arr[i] != arr[uniqueIdx])
                 {
                     uniqueIdx++;
-                    arr[uniqueIdx] = arr[i];
+                    arr[uniqueIdx] = arr[i]; // Зсуваємо унікальний елемент ліворуч
                 }
             }
-            return uniqueIdx + 1;
+            return uniqueIdx + 1; // Повертаємо нову кількість унікальних елементів
         }
 
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.WriteLine("=========================================================");
             Console.WriteLine("        ЛАБОРАТОРНА РОБОТА №2: АЛГОРИТМИ НАД МАСИВАМИ    ");
             Console.WriteLine("=========================================================");
 
             int[] numbers = { 42, -7, 18, 99, 8, -15, 24, 88, 3, -2, 76 };
-            Console.WriteLine($"Вихідний масив: [ {string.Join(", ", numbers)} ]\n");
+            Console.WriteLine("Вихідний масив: [ " + string.Join(", ", numbers) + " ]\n");
 
+            // 1. Пошук екстремумів
             FindExtremes(numbers, out int minVal, out int minIdx, out int maxVal, out int maxIdx);
-            Console.WriteLine($" Мінімум: {minVal} (індекс {minIdx})");
-            Console.WriteLine($" Максимум: {maxVal} (індекс {maxIdx})");
-            Console.WriteLine($" (Варіант 1) Сер. арифм. між min та max: {AverageBetweenMinMax(numbers, minIdx, maxIdx):F2}");
+            Console.WriteLine(" Мінімум: " + minVal + " (індекс " + minIdx + ")");
+            Console.WriteLine(" Максимум: " + maxVal + " (індекс " + maxIdx + ")");
 
-            Console.WriteLine($"\n Додатні парні числа: [ {string.Join(", ", FilterPositiveEven(numbers))} ]");
+            // 2. Фільтрація
+            int[] filtered = FilterPositiveEven(numbers);
+            Console.WriteLine("\n Додатні парні числа: [ " + string.Join(", ", filtered) + " ]");
 
+            // 3. Реверс масиву
             int[] arrForReverse = (int[])numbers.Clone();
             ReverseInPlace(arrForReverse, 0, arrForReverse.Length - 1);
-            Console.WriteLine($"\n Масив після реверсу: [ {string.Join(", ", arrForReverse)} ]");
+            Console.WriteLine("\n Масив після реверсу In-place: [ " + string.Join(", ", arrForReverse) + " ]");
 
-            int[] arrForRotate = (int[])numbers.Clone();
-            RotateRightInPlace(arrForRotate, 3);
-            Console.WriteLine($" (Варіант 2) Зсув праворуч на 3: [ {string.Join(", ", arrForRotate)} ]");
-
-            int[] duplicateArray = { 10, 20, 10, 30, 20, 40, 10, 50 };
+            // ТЕСТУВАННЯ ІНДИВІДУАЛЬНОГО ВАРІАНТА №3
+            int[] duplicateArray = { 10, 20, 10, 30, 20, 40, 10, 50, 30, 40 };
+            Console.WriteLine("\n--- ВАРІАНТ №3: ВИДАЛЕННЯ ДУБЛІКАТІВ ---");
+            Console.WriteLine("Масив з дублікатами: [ " + string.Join(", ", duplicateArray) + " ]");
+            
             int uniqueLength = RemoveDuplicatesInPlace(duplicateArray);
-            Console.Write($"\n (Варіант 3) Без дублікатів: [ ");
-            for (int i = 0; i < uniqueLength; i++) Console.Write(duplicateArray[i] + (i < uniqueLength - 1 ? ", " : ""));
-            Console.WriteLine(" ]\n✅ Тестування завершено успішно!");
+            
+            Console.Write("Після стиснення (унікальні): [ ");
+            for (int i = 0; i < uniqueLength; i++) 
+            {
+                Console.Write(duplicateArray[i] + (i < uniqueLength - 1 ? ", " : ""));
+            }
+            Console.WriteLine(" ]");
+            Console.WriteLine("\n✅ Тестування завершено успішно!");
         }
     }
 }
